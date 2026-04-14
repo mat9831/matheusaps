@@ -1,0 +1,10 @@
+CREATE TABLE doador (
+    id BIGINT IDENTITY(1,1) NOT NULL,
+    email VARCHAR(255) COLLATE Latin1_General_CI_AS NOT NULL,
+    nome VARCHAR(255) COLLATE Latin1_General_CI_AS NOT NULL,
+    telefone VARCHAR(255) COLLATE Latin1_General_CI_AS NOT NULL,
+    tipo_doacao VARCHAR(255) COLLATE Latin1_General_CI_AS NULL,
+    valor DECIMAL(10,2) NOT NULL DEFAULT 0,
+
+    CONSTRAINT PK_doador PRIMARY KEY CLUSTERED (id)
+);

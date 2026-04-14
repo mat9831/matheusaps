@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Doação</title>
+    <link rel="stylesheet" href="/css/cadastro_style.css">
+</head>
+<body>
+
+<div class="page">
+
+    <!-- LEFT PANEL -->
+    <div class="side-panel">
+        <a href="/" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Voltar ao início
+        </a>
+
+        <div class="side-content">
+            <p class="side-eyebrow">Cadastro de Doação</p>
+            <h1 class="side-title">Sua generosidade <span>transforma vidas</span></h1>
+            <p class="side-body">
+                Preencha o formulário ao lado e faça parte de uma rede de solidariedade que conecta pessoas ao redor do mundo.
+            <br>Cada doação ajuda a construir um futuro mais justo, humano e cheio de esperança.
+            </p>
+        </div>
+
+        <div class="trust-items">
+            <div class="trust-item">
+                <div class="trust-dot"></div>
+                <span>100% dos valores chegam à causa escolhida</span>
+            </div>
+            <div class="trust-item">
+                <div class="trust-dot"></div>
+                <span>Seus dados são protegidos e nunca compartilhados</span>
+            </div>
+            <!-- <div class="trust-item">
+                <div class="trust-dot"></div>
+                <span>Você recebe confirmação após o cadastro</span>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- RIGHT FORM PANEL -->
+    <div class="form-panel">
+        <div class="form-card">
+            <div class="form-header">
+                <!-- <p class="form-step">Etapa 1 de 1</p> -->
+                <h2 class="form-title">Dados da Doação</h2>
+            </div>
+
+            <!-- FORMULÁRIO -->
+            <form id="formDoacao">
+                <div class="field-group">
+
+                    <div class="field">
+                        <label>Nome completo</label>
+                        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Telefone</label>
+                        <input type="text" name="telefone" placeholder="(11) 99999-9999" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Área da Doação</label>
+                        <div class="select-wrap">
+                            <select name="tipoDoacao" required>
+                                <option value="">Selecione uma área</option>
+                                <option value="Saúde">🏥 Saúde</option>
+                                <option value="Meio Ambiente">🌿 Meio Ambiente</option>
+                                <option value="Educação">📚 Educação</option>
+                                <option value="Assistência Social">🤝 Assistência Social</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Valor da Doação</label>
+                        <div class="valor-wrap">
+                            <span class="valor-prefix">R$</span>
+                            <input type="number" name="valor" placeholder="0,00" min="1" step="0.01" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Confirmar Doação
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- MENSAGEM DE SUCESSO -->
+            <div id="mensagem">
+                <div class="success-icon">💚</div>
+                <h3 class="success-title" id="textoMensagem"></h3>
+                <p class="success-sub">Sua doação foi registrada com sucesso.<br>Juntos fazemos a diferença!</p>
+                <a href="/" class="back-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Voltar ao início
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const form = document.getElementById("formDoacao");
+    const mensagem = document.getElementById("mensagem");
+    const textoMensagem = document.getElementById("textoMensagem");
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const nome = document.getElementById("nome").value;
+
+        fetch("/doar", {
+            method: "POST",
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (response.ok) {
+                form.style.display = "none";
+                textoMensagem.textContent = `Obrigado, ${nome}!`;
+                mensagem.style.display = "block";
+            } else {
+                alert("Erro ao cadastrar a doação.");
+            }
+        })
+        .catch(() => {
+            alert("Erro de conexão com o servidor.");
+        });
+    });
+</script>
+
+</body>
+</html>
