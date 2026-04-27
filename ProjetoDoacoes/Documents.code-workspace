@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "TCC",
+			"path": "../TCC"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic",
+		"commentTranslate.hover.enabled": true,
+		"liveServer.settings.multiRootWorkspaceName": "Documents"
+	}
+}
