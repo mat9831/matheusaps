@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depoimentos Projeto Doações</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/beneficiarios.css}">
+    <style>
+        /* ── extras da página depoimentos ── */
+        .header-quote-deco {
+            font-family: 'Playfair Display', serif;
+            font-size: 180px;
+            color: rgba(200,118,58,0.1);
+            line-height: 0.6;
+            position: absolute;
+            top: 40px; left: 48px;
+            pointer-events: none;
+        }
+        .stats-strip {
+            display: flex; justify-content: center;
+            background: var(--soft);
+            border-bottom: 1px solid rgba(26,26,46,0.08);
+        }
+        .strip-stat {
+            text-align: center; padding: 28px 52px;
+            border-right: 1px solid rgba(26,26,46,0.08);
+            flex: 1; max-width: 220px;
+        }
+        .strip-stat:last-child { border-right: none; }
+        .strip-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px; font-weight: 700; color: var(--warm); line-height: 1;
+        }
+        .strip-label {
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(26,26,46,0.4); margin-top: 8px;
+        }
+
+
+    /* grid de cards */
+    .dep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+        padding: 40px 48px 80px;
+        position: relative; z-index: 1;
+    }
+    .dep-card {
+        background: var(--white);
+        border-radius: 20px; padding: 32px 28px;
+        border: 1.5px solid rgba(26,26,46,0.08);
+        position: relative; overflow: hidden;
+        transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+        opacity: 0; animation: fadeUp 0.6s forwards;
+    }
+    .dep-card:hover {
+        box-shadow: 0 16px 48px rgba(26,26,46,0.1);
+        border-color: rgba(200,118,58,0.2);
+        transform: translateY(-3px);
+    }
+    .dep-quote-bg {
+        position: absolute; top: 12px; right: 20px;
+        font-family: 'Playfair Display', serif;
+        font-size: 80px; color: rgba(200,118,58,0.07); line-height: 1;
+        pointer-events: none;
+    }
+    .dep-area-tag {
+        display: inline-block; font-size: 10px; letter-spacing: 2.5px;
+        text-transform: uppercase; padding: 4px 12px; border-radius: 100px;
+        margin-bottom: 10px; font-weight: 500;
+    }
+    .tag-saude        { background: rgba(200,118,58,0.1); color: var(--warm); }
+    .tag-educacao     { background: rgba(26,26,46,0.08);  color: var(--ink); }
+    .tag-meioambiente { background: rgba(74,124,89,0.1);  color: var(--sage); }
+    .tag-assistencia  { background: rgba(212,168,71,0.1); color: #A07828; }
+
+    .dep-benef {
+        font-size: 12px; color: var(--warm); font-weight: 500;
+        margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+    }
+    .dep-mensagem {
+        font-size: 15px; line-height: 1.8;
+        color: rgba(26,26,46,0.72); font-weight: 300;
+        font-style: italic; margin-bottom: 24px;
+    }
+    .dep-footer {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-top: 18px; border-top: 1px solid rgba(26,26,46,0.07);
+    }
+    .dep-nome { font-size: 14px; font-weight: 500; color: var(--ink); }
+    .dep-data { font-size: 11px; color: rgba(26,26,46,0.35); letter-spacing: 1px; margin-top: 2px; }
+    .dep-stars { font-size: 14px; color: var(--gold); letter-spacing: 2px; }
+
+    /* vazio */
+    .empty-state { text-align: center; padding: 80px 24px; grid-column: 1/-1; }
+    .empty-icon  { font-size: 64px; margin-bottom: 24px; opacity: 0.4; }
+    .empty-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); opacity: 0.5; margin-bottom: 12px; }
+    .empty-sub   { font-size: 14px; color: rgba(26,26,46,0.4); font-weight: 300; line-height: 1.7; margin-bottom: 28px; }
+
+    .header-cta {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: var(--warm); color: var(--cream);
+        padding: 14px 32px; border-radius: 100px;
+        font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+        transition: all 0.25s; text-decoration: none;
+        opacity: 0; animation: fadeUp 0.7s 0.55s forwards; position: relative; z-index: 1;
+    }
+    .header-cta:hover { background: var(--warm-light); transform: translateX(4px); }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 900px) {
+        .dep-grid { padding: 32px 20px 60px; grid-template-columns: 1fr; }
+        .stats-strip { flex-wrap: wrap; }
+    }
+</style>
+
+<!-- // pagina responsável por mostrar os depoimentos dos doadores, com nome, data, mensagem e avaliação em estrelas.
+Cada depoimento é vinculado a um beneficiário específico, mostrando o nome da organização beneficiada. Se não houver depoimentos,
+exibe uma mensagem incentivando os usuários a compartilharem suas experiências. -->
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+
+<nav class="navbar">
+    <div class="nav-logo">Doações</div>
+    <div class="nav-links">
+        <a href="/"              class="nav-link">Início</a>
+        <a href="/beneficiarios" class="nav-link">Ver organizações</a>
+        <a href="/cadastro"      class="nav-cta">Fazer doação</a>
+    </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+
+<header class="page-header" style="position:relative;overflow:hidden;">
+    <div class="header-quote-deco">"</div>
+    <div class="page-eyebrow" style="font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;opacity:0;animation:fadeUp .7s .1s forwards;position:relative;z-index:1;">
+        Comunidade
+    </div>
+    <h1 style="opacity:0;animation:fadeUp .7s .25s forwards;position:relative;z-index:1;">
+        O que os <span>doadores</span> dizem
+    </h1>
+    <p style="opacity:0;animation:fadeUp .7s .4s forwards;position:relative;z-index:1;">
+        Histórias reais de quem já fez a diferença. Cada depoimento é uma prova do impacto que uma doação pode gerar.
+    </p>
+    <a href="/usuario_depoimento" class="header-cta" style="margin-top:32px;">
+        Deixar meu depoimento
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+        </svg>
+    </a>
+</header>
+
+<!-- ── STATS STRIP ── -->
+
+<div class="stats-strip">
+    <div class="strip-stat">
+        <div class="strip-num" th:text="${total}">0</div>
+        <div class="strip-label">Depoimentos</div>
+    </div>
+    <div class="strip-stat">
+        <div class="strip-num" th:text="${mediaEstrelas} + ' ★'">— ★</div>
+        <div class="strip-label">Avaliação média</div>
+    </div>
+    <div class="strip-stat">
+        <div class="strip-num" th:text="${totalBeneficiarios}">0</div>
+        <div class="strip-label">Beneficiários citados</div>
+    </div>
+</div>
+
+<!-- ── GRID DE DEPOIMENTOS ── -->
+
+<section class="dep-grid">
+
+
+<!-- Vazio -->
+<div th:if="${#lists.isEmpty(depoimentos)}" class="empty-state">
+    <div class="empty-icon">💬</div>
+    <div class="empty-title">Nenhum depoimento ainda</div>
+    <p class="empty-sub">Seja o primeiro a compartilhar sua experiência<br>e inspire outros doadores.</p>
+    <a href="/usuario_depoimento" class="header-cta" style="margin-top:0;">Deixar depoimento</a>
+</div>
+
+<!-- Cards -->
+<div th:each="dep, iterStat : ${depoimentos}"
+    class="dep-card"
+     th:style="'animation-delay:' + ${iterStat.index * 70} + 'ms'">
+
+    <div class="dep-quote-bg">"</div>
+
+    <!-- Tag da área do beneficiário -->
+    <div class="dep-area-tag"
+        th:classappend="'tag-' + ${dep.beneficiario.area?.toLowerCase()}"
+        th:text="${dep.beneficiario.area}">
+    </div>
+
+    <!-- Nome do beneficiário (FK visível) -->
+    <div class="dep-benef">
+        🏢 <span th:text="${dep.beneficiario.nome}">Organização</span>
+    </div>
+
+    <!-- Mensagem -->
+    <p class="dep-mensagem" th:text="'&quot;' + ${dep.mensagem} + '&quot;'"></p>
+
+    <!-- Rodapé: autor + estrelas -->
+    <div class="dep-footer">
+        <div>
+            <div class="dep-nome" th:text="${dep.nomeDoador}">Nome</div>
+            <div class="dep-data"
+                th:text="${#temporals.format(dep.data, 'dd/MM/yyyy')}">
+            </div>
+        </div>
+        <div class="dep-stars"
+            th:text="${'★'.repeat(dep.estrelas ?: 5)}">
+        </div>
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- ── FOOTER ── -->
+
+<footer class="footer">
+    © 2026 Projeto Doações — Transformando vidas através da solidariedade
+</footer>
+
+</body>
+</html>

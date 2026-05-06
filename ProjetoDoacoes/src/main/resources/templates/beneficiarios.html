@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impacto — Projeto Doações</title>
+    <link rel="stylesheet" th:href="@{/css/beneficiarios.css}">
+</head>
+<body>
+
+    <!-- // pagina responsável por mostrar os beneficiários, suas descrições, valores arrecadados, quantidade de doações e percentual da meta atingida.
+    A partir daqui o usuário pode clicar em "Apoiar" para ser redirecionado ao formulário de cadastro com o beneficiário pré-selecionado. -->
+    <!-- // ── NAVBAR ── -->
+<nav class="navbar">
+    <div class="nav-logo">Projeto Doações</div>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Início</a>
+        <!-- <a href="/beneficiarios" class="nav-link active">Impacto</a> -->
+        <a href="/depoimentos" class="nav-link">Depoimentos</a>
+        <a href="/cadastro" class="nav-cta">Fazer doação</a>
+    </div>
+</nav>
+<!-- // ── HEADER ── -->
+<section class="page-header">
+    <h1>Transparência total 🌍</h1>
+    <p>Acompanhe em tempo real para onde vão as doações e o progresso de cada organização.</p>
+</section>
+<!-- // ── RESUMO ── -->
+<section class="resumo-section">
+    <div class="resumo-card">
+        <div class="resumo-num" id="resumoTotal">R$ 0,00</div>
+        <div class="resumo-label">Total arrecadado</div>
+    </div>
+    <div class="resumo-card">
+        <div class="resumo-num" id="resumoDoacoes">0</div>
+        <div class="resumo-label">Doações realizadas</div>
+    </div>
+    <div class="resumo-card">
+        <div class="resumo-num">4</div>
+        <div class="resumo-label">Organizações apoiadas</div>
+    </div>
+    <div class="resumo-card">
+        <div class="resumo-num">4</div>
+        <div class="resumo-label">Áreas de atuação</div>
+    </div>
+</section>
+
+<section class="benef-section">
+
+
+<!-- SAÚDE -->
+<div class="area-block">
+    <div class="area-block-header saude">🏥 Saúde</div>
+    <div class="area-cards-row" th:each="b : ${beneficiarios}" th:if="${b.area == 'Saúde'}">
+        <div class="benef-detail-card">
+            <div class="benef-top">
+                <div class="benef-info">
+                    <h3 th:text="${b.nome}"></h3>
+                    <p th:text="${b.descricao}"></p>
+                </div>
+            </div>
+
+            <div class="benef-stats">
+                <div class="benef-stat">
+                    <span class="stat-val saude-color" th:text="'R$ ' + ${#numbers.formatDecimal(b.totalRecebido,1,'COMMA',2,'POINT')}"></span>
+                    <span class="stat-lbl">arrecadado</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val" th:text="${b.quantidadeDoacoes}"></span>
+                    <span class="stat-lbl">doações</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val saude-color" th:text="${b.percentualMeta} + '%'"></span>
+                    <span class="stat-lbl">da meta</span>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill saude-bg" th:style="'width:' + ${b.percentualMeta} + '%'"></div>
+            </div>
+
+            <a th:href="'/cadastro?beneficiarioId=' + ${b.id}" class="apoiar-btn saude-btn">Apoiar →</a>
+        </div>
+    </div>
+</div>
+
+<!-- EDUCAÇÃO -->
+<div class="area-block">
+    <div class="area-block-header educacao">📚 Educação</div>
+    <div class="area-cards-row" th:each="b : ${beneficiarios}" th:if="${b.area == 'Educação'}">
+        <div class="benef-detail-card">
+            <div class="benef-top">
+                <div class="benef-info">
+                    <h3 th:text="${b.nome}"></h3>
+                    <p th:text="${b.descricao}"></p>
+                </div>
+            </div>
+
+            <div class="benef-stats">
+                <div class="benef-stat">
+                    <span class="stat-val educacao-color"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(b.totalRecebido,1,'COMMA',2,'POINT')}"></span>
+                    <span class="stat-lbl">arrecadado</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val" th:text="${b.quantidadeDoacoes}"></span>
+                    <span class="stat-lbl">doações</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val educacao-color" th:text="${b.percentualMeta} + '%'"></span>
+                    <span class="stat-lbl">da meta</span>
+                </div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill educacao-bg" th:style="'width:' + ${b.percentualMeta} + '%'"></div>
+                </div>
+            </div>
+
+            <a th:href="'/cadastro?beneficiarioId=' + ${b.id}" class="apoiar-btn educacao-btn">Apoiar →</a>
+        </div>
+    </div>
+</div>
+
+<!-- MEIO AMBIENTE -->
+<div class="area-block">
+    <div class="area-block-header meioambiente">🌿 Meio Ambiente</div>
+    <div class="area-cards-row" th:each="b : ${beneficiarios}" th:if="${b.area == 'Meio Ambiente'}">
+        <div class="benef-detail-card">
+            <div class="benef-top">
+                <div class="benef-info">
+                    <h3 th:text="${b.nome}"></h3>
+                    <p th:text="${b.descricao}"></p>
+                </div>
+            </div>
+
+            <div class="benef-stats">
+                <div class="benef-stat">
+                    <span class="stat-val meioambiente-color"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(b.totalRecebido,1,'COMMA',2,'POINT')}"></span>
+                    <span class="stat-lbl">arrecadado</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val" th:text="${b.quantidadeDoacoes}"></span>
+                    <span class="stat-lbl">doações</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val meioambiente-color" th:text="${b.percentualMeta} + '%'"></span>
+                    <span class="stat-lbl">da meta</span>
+                </div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill meioambiente-bg" th:style="'width:' + ${b.percentualMeta} + '%'"></div>
+                </div>
+            </div>
+
+            <a th:href="'/cadastro?beneficiarioId=' + ${b.id}" class="apoiar-btn meioambiente-btn">Apoiar →</a>
+        </div>
+    </div>
+</div>
+
+<!-- ASSISTÊNCIA SOCIAL -->
+<div class="area-block">
+    <div class="area-block-header assistencia">🤝 Assistência Social</div>
+    <div class="area-cards-row" th:each="b : ${beneficiarios}" th:if="${b.area == 'Assistência Social'}">
+        <div class="benef-detail-card">
+            <div class="benef-top">
+                <div class="benef-info">
+                    <h3 th:text="${b.nome}"></h3>
+                    <p th:text="${b.descricao}"></p>
+                </div>
+            </div>
+
+            <div class="benef-stats">
+                <div class="benef-stat">
+                    <span class="stat-val assistencia-color"
+                        th:text="'R$ ' + ${#numbers.formatDecimal(b.totalRecebido,1,'COMMA',2,'POINT')}"></span>
+                    <span class="stat-lbl">arrecadado</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val" th:text="${b.quantidadeDoacoes}"></span>
+                    <span class="stat-lbl">doações</span>
+                </div>
+                <div class="benef-stat">
+                    <span class="stat-val assistencia-color" th:text="${b.percentualMeta} + '%'"></span>
+                    <span class="stat-lbl">da meta</span>
+                </div>
+            </div>
+
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill assistencia-bg" th:style="'width:' + ${b.percentualMeta} + '%'"></div>
+                </div>
+            </div>
+
+            <a th:href="'/cadastro?beneficiarioId=' + ${b.id}" class="apoiar-btn assistencia-btn">Apoiar →</a>
+        </div>
+    </div>
+</div>
+<!-- ── FIM DAS ÁREAS ── -->
+</section>
+<!-- ── FOOTER ── -->
+<footer class="footer">
+    <p>Projeto Doações - Transparência total</p>
+</footer>
+<!-- // ── SCRIPTS ── -->
+<script>
+fetch('/api/beneficiarios')
+.then(r => r.json())
+.then(data => {
+    const totalVal = data.reduce((s, b) => s + (b.totalRecebido || 0), 0);
+    const totalDoa = data.reduce((s, b) => s + (b.quantidadeDoacoes || 0), 0);
+
+    document.getElementById('resumoTotal').textContent =
+        new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(totalVal);
+
+    document.getElementById('resumoDoacoes').textContent = totalDoa;
+});
+</script>
+
+</body>
+</html>
